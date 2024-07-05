@@ -15,7 +15,8 @@ function App() {
     e.preventDefault();
     const form = e.target;
     const longUrl = form.url_id.value;
-    setUrl(longUrl);
+    setUrl('');
+    setShortUrl('');
     setLoading(true)
     axios.post(`${base_url}/shortenUrl`, { originalUrl: longUrl })
       .then(res => {
@@ -23,19 +24,18 @@ function App() {
         setLoading(false)
         if (data.error) {
           toast('Not a valid URL😥 Try Again With a Valid URL!');
-          setShortUrl('');
         } else {
+          setUrl(longUrl);
           setShortUrl(data.shortUrl);
           toast('Well done 🔥 Now click the URL🤗');
         }
         form.reset();
       })
       .catch(error => {
-        setLoading(false)
-        setShortUrl('');
         form.reset();
         console.error('Error:', error);
         toast('Not a valid URL😥 Try Again With a Valid URL!');
+        setLoading(false)
       });
   };
 

@@ -9,16 +9,18 @@ import {base_url} from './configarable';
 function App() {
   const [url, setUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
     const longUrl = form.url_id.value;
     setUrl(longUrl);
-
+    setLoading(true)
     axios.post(`${base_url}/shortenUrl`, { originalUrl: longUrl })
       .then(res => {
         const data = res.data;
+        setLoading(false)
         if (data.error) {
           toast('Not a valid URL😥 Try Again With a Valid URL!');
           setShortUrl('');
@@ -29,22 +31,25 @@ function App() {
         form.reset();
       })
       .catch(error => {
+        setLoading(false)
+        setShortUrl('');
+        form.reset();
         console.error('Error:', error);
-        toast('An error occurred. Please try again.');
+        toast('Not a valid URL😥 Try Again With a Valid URL!');
       });
   };
 
   return (
     <div className='bg-black min-h-screen'>
       <p className='text-red-600 py-5 text-center font-bold text-5xl'>Welcome To The URL Shortener</p>
-      <div className='bg-red-700 p-5  w-4/5 md:w-2/3 m-auto'>
+      <div className='bg-red-700 p-5  w-4/5 md:w-2/3 m-auto rounded-lg'>
         <Marquee className=''>
           <p className='text-center text-black my-5 font-semibold'>Give Your URL and Click The Submit Button</p>
         </Marquee>
         <div className='my-8 flex justify-center w-full'>
           <form className='w-full md:w-1/2 md:flex md:gap-2' onSubmit={handleSubmit}>
             <input type="text" name='url_id' placeholder="Give your URL" className="input input-bordered w-full" />
-            <button type='submit' className="btn btn-active btn-neutral bg-black mt-4 md:mt-0">Submit</button>
+            <button type='submit' className="btn btn-active btn-neutral bg-black mt-4 md:mt-0">{loading ? 'loading...' : 'Submit'}</button>
           </form>
         </div>
         <div className='flex justify-center mt-5'>
